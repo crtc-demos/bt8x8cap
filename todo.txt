@@ -1,5 +1,0 @@
-CGA: RAII Mapmemory call
-CGA: RAII ACPI status
-CGA: Make m_hFile local and pass it in
-CGA: Check that 450K user memory frames are sensible
-
