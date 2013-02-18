@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6B13ADEE-A5E5-40A7-99A0-24D8E67786C5}</ProjectGuid>
+    <ProjectGuid>{1C2FDA13-4B95-49EE-B2F9-4937C0411BE4}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>vbicap</RootNamespace>
   </PropertyGroup>
@@ -19,15 +19,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110_xp</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110_xp</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110_xp</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -52,7 +51,6 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -68,7 +66,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -78,16 +75,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="bt8x8.cpp" />
-    <ClCompile Include="bt8x8_i2c.cpp" />
-    <ClCompile Include="bt8x8_typ.cpp" />
-    <ClCompile Include="btdrv4win.cpp" />
-    <ClCompile Include="debuglog.cpp" />
-    <ClCompile Include="dsdrv34.cpp" />
     <ClCompile Include="vbicap.cpp" />
-    <ClCompile Include="hwdrv.cpp" />
-    <ClCompile Include="hwmem.cpp" />
-    <ClCompile Include="hwpci.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bt8x8.h" />
