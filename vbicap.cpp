@@ -1265,7 +1265,13 @@ public:
             ServiceHandle hSCManager(OpenSCManager(NULL, NULL, SC_MANAGER_CONNECT));
             IF_NULL_THROW(hSCManager);
 
-            m_hService = OpenService(hSCManager, L"DSDrv4", SERVICE_START | SERVICE_STOP);
+            String driverName("DSDrv4");
+            const WCHAR* arch = _wgetenv(L"PROCESSOR_ARCHITEW6432");
+            if (arch != nullptr)
+                driverName += String(arch);
+            NullTerminatedWideString name(driverName);
+
+            m_hService = OpenService(hSCManager, name, SERVICE_START | SERVICE_STOP);
             IF_NULL_THROW(m_hService);
         }
 
@@ -1476,8 +1482,8 @@ public:
         WriteByte (BT848_O_VTC, BT848_VTC_HSFMT);
 
         WriteByte (BT848_ADC, BT848_ADC_RESERVED | BT848_ADC_CRUSH);
-        WriteByte (BT848_O_CONTROL, BT848_CONTROL_LDEC | BT848_CONTROL_LNOTCH);
-        WriteByte (BT848_E_CONTROL, BT848_CONTROL_LDEC | BT848_CONTROL_LNOTCH);
+        WriteByte (BT848_O_CONTROL, BT848_CONTROL_LDEC | BT848_CONTROL_LNOTCH | BT848_CONTROL_CON_MSB);
+        WriteByte (BT848_E_CONTROL, BT848_CONTROL_LDEC | BT848_CONTROL_LNOTCH | BT848_CONTROL_CON_MSB);
 
         WriteByte (BT848_E_SCLOOP, BT848_SCLOOP_CKILL);
         WriteByte (BT848_O_SCLOOP, BT848_SCLOOP_CKILL);

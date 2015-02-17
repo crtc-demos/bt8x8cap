@@ -19,48 +19,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="tvcard.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bt8x8.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bt8x8_i2c.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bt8x8_reg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bt8x8_typ.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="btdrv.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="debug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="debuglog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dsdrv.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="dsdrvlib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hwdrv.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hwmem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hwpci.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mytypes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
 </Project>

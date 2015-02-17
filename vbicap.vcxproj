@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -20,13 +20,14 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v110_xp</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -76,22 +77,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="vbicap.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="bt8x8.h" />
-    <ClInclude Include="bt8x8_i2c.h" />
-    <ClInclude Include="bt8x8_reg.h" />
-    <ClInclude Include="bt8x8_typ.h" />
-    <ClInclude Include="btdrv.h" />
-    <ClInclude Include="debug.h" />
-    <ClInclude Include="debuglog.h" />
-    <ClInclude Include="dsdrv.h" />
-    <ClInclude Include="dsdrvlib.h" />
-    <ClInclude Include="hwdrv.h" />
-    <ClInclude Include="hwmem.h" />
-    <ClInclude Include="hwpci.h" />
-    <ClInclude Include="mytypes.h" />
-    <ClInclude Include="tvcard.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
