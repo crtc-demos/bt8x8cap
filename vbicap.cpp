@@ -630,7 +630,7 @@ public:
     {
         if(pMemStruct != NULL) {
             TPageStruct* pPages = (TPageStruct*)(pMemStruct + 1);
-            DWORD Offset = (DWORD)pUser - (DWORD)pMemStruct->dwUser;;
+            DWORD Offset = (DWORD)pUser - (DWORD)pMemStruct->dwUser;
             DWORD i = 0;
             DWORD sum = 0;
             DWORD pRetVal = 0;
@@ -1562,76 +1562,101 @@ public:
         *(pRiscCode++) = BT848_RISC_JUMP;
         *(pRiscCode++) = pRiscBasePhysical;
 
+        int totalRISCBytes = ((long)pRiscCode - (long)riscMemory.GetUserPointer());
+        console.write(String("Total RISC bytes = ") + decimal(totalRISCBytes) + "\n");
+
         // start address for the DMA RISC code
         WriteDword(BT848_RISC_STRT_ADD, pRiscBasePhysical);
 
-        while (true) {
-            console.write("Waiting for connection\n");
-            AutoHandle h = File("\\\\.\\pipe\\vbicap", true).createPipe();
+        try {
+            Array<Byte> data(VBI_LINES_PER_FIELD*1024);
+            while (true) {
+                console.write("Waiting for connection\n");
+                AutoHandle h = File("\\\\.\\pipe\\vbicap", true).createPipe();
 
-            bool connected = (ConnectNamedPipe(h, NULL) != 0) ? true :
-                (GetLastError() == ERROR_PIPE_CONNECTED);
-            if (!connected)
-                continue;
-
-            console.write("Connected\n");
-
-            int command = h.read<int>();
-            if (command == 0) {
-                // Stop vbicap command
-                break;
-            }
-            if (command != 1)
-                continue;
-
-            DMAEnable dma;
-
-            int oldFrame = -1;
-            int frame;
-            bool broken = false;
-
-            do {
-                // read the RISC program counter, i.e. pointer into the RISC code
-                PHYS CurrentRiscPos = ReadDword(BT848_RISC_COUNT);
-
-                int CurrentPos = (CurrentRiscPos - pRiscBasePhysical) / BytesPerRISCField;
-
-                if (CurrentPos < VBI_FIELD_CAPTURE_COUNT) {
-                    // the current position lies in the field which is currently being filled
-                    // calculate the index of the previous (i.e. completed) frame
-                    if (CurrentPos < 2)
-                        frame = ((CurrentPos + VBI_FIELD_CAPTURE_COUNT) - 2) / 2;
-                    else
-                        frame = (CurrentPos - 2) / 2;
-                }
-                else
-                    frame = 0;
-
-                if (frame == oldFrame) {
-                    Sleep(5);
+                bool connected = (ConnectNamedPipe(h, NULL) != 0) ? true :
+                    (GetLastError() == ERROR_PIPE_CONNECTED);
+                if (!connected)
                     continue;
+
+                console.write("Connected\n");
+
+                int command = h.read<int>();
+                if (command == 0) {
+                    // Stop vbicap command
+                    break;
                 }
-                if (oldFrame == -1) {
-                    oldFrame = frame;
+                if (command != 1)
                     continue;
-                }
+
+                DMAEnable dma;
+
+                int oldFrame = -1;
+                int frame;
+                bool broken = false;
 
                 do {
-                    oldFrame = (oldFrame + 1) % VBI_FRAME_CAPTURE_COUNT;
-                    BYTE* pVBI = static_cast<BYTE*>(userMemory[oldFrame].GetUserPointer());
-                    for (int row = 0; row < 450; row++, pVBI += VBI_LINE_SIZE) {
+                    // read the RISC program counter, i.e. pointer into the RISC code
+                    PHYS CurrentRiscPos;
+                    do {
+                        CurrentRiscPos = ReadDword(BT848_RISC_COUNT) - pRiscBasePhysical;
+                        //console.write(String("pos = ") + decimal(CurrentRiscPos) + "\n");
+                        if (CurrentRiscPos >= totalRISCBytes) {
+                            //console.write("retrying\n");
+                            continue;
+                        }
+                        break;
+                    } while (true);
+                    
+
+                    int CurrentPos = (CurrentRiscPos) / BytesPerRISCField;
+
+                    // the current position lies in the field which is currently being filled
+                    // calculate the index of the previous (i.e. completed) frame
+                    frame = (CurrentPos + VBI_FIELD_CAPTURE_COUNT - 1) % VBI_FIELD_CAPTURE_COUNT;
+                    //console.write(String(decimal(frame)) + ", ");
+
+                    if (frame == oldFrame) {
+                        //DWORD startSleep = GetTickCount();
+                        Sleep(5);
+                        //console.write(String("Slept ") + decimal(GetTickCount() - startSleep) + "ms\n");
+                        continue;
+                    }
+                    if (oldFrame == -1) {
+                        oldFrame = frame;
+                        continue;
+                    }
+
+                    //DWORD startWrite = GetTickCount();
+                    int framesWritten = 0;
+                    do {
+                        oldFrame = (oldFrame + 1) % VBI_FIELD_CAPTURE_COUNT;
+                        BYTE* pVBI = static_cast<BYTE*>(userMemory[oldFrame / 2].GetUserPointer());
+                        Byte* pOut = &data[0];
+                        if ((oldFrame & 1) != 0)
+                            pVBI += VBI_LINES_PER_FIELD * VBI_LINE_SIZE;
+                        for (int row = 0; row < VBI_LINES_PER_FIELD; row++, pVBI += VBI_LINE_SIZE, pOut += 1024)
+                            memcpy(pOut, pVBI, 1024);
                         DWORD bytesWritten;
-                        if (WriteFile(h, pVBI, 1024, &bytesWritten, NULL) == 0) {
+                        if (WriteFile(h, &data[0], 1024*VBI_LINES_PER_FIELD, &bytesWritten, NULL) == 0) {
                             DWORD error = GetLastError();
                             if (error == ERROR_BROKEN_PIPE || error == ERROR_NO_DATA) {
                                 broken = true;
                                 break;
                             }
                         }
-                    }
-                } while (oldFrame != frame && !broken);
-            } while (!broken);
-            console.write("Capture complete.\n");
+                        ++framesWritten;
+                    } while (oldFrame != frame && !broken);
+                    if (framesWritten > 5)
+                        console.write("*");
+                    //console.write(String("Wrote ") + decimal(framesWritten) + " frames in " + decimal(GetTickCount() - startWrite) + "ms\n");
+                } while (!broken);
+                console.write("Capture complete.\n");
+            }
+        }
+        catch (...)
+        {
+            console.write("Exception caught - attempting cleanup\n");
         }
 
         if (m_MemoryBase != 0)
